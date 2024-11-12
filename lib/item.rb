@@ -1,80 +1,41 @@
-require_relative 'logger_manager'  # Підключаємо LoggerManager
 require 'faker'
+require_relative './logger_manager'
 
-module RubyParser
-  class Item
-    include Comparable
+class Item
+  include Comparable
+  attr_accessor :name, :price, :grade
 
-    # Атрибути класу
-    attr_accessor :name, :price, :description, :category, :image_path
+  def initialize(params = {})
+    @name = params[:name] || 'Назва відсутня'
+    @price = params[:price] || 'Ціна відсутня'
+    @grade = params[:grade] || 'Рейтинг відсутній'
+    
+    LoggerManager.log_processed_file("Ініціалізовано об'єкт item з назвою #{@name}")
 
-    # Конструктор для ініціалізації об'єкта з можливістю передачі блоку
-    def initialize(attributes = {})
-      # Значення за замовчуванням
-      @name = attributes.fetch(:name, 'Невідомий товар')
-      @price = attributes.fetch(:price, 0.0)
-      @description = attributes.fetch(:description, 'Опис не вказано')
-      @category = attributes.fetch(:category, 'Невідома категорія')
-      @image_path = attributes.fetch(:image_path, 'path/to/image.jpg')
+    yield(self) if block_given?
+  end
 
-      # Логуємо ініціалізацію
-      RubyParser::LoggerManager.log_processed_file("Ініціалізація товару: #{@name}")
+  def <=>(other)
+    price <=> other.price
+  end
 
-      # Якщо передано блок, налаштовуємо об'єкт
-      yield(self) if block_given?
+  def to_s
+    "Холодильник: Назва: #{name}, Ціна: #{price}, Рейтинг: #{grade}"
+  end
+  
+  def to_h
+    instance_variables.each_with_object({}) do |var, hash|
+      hash[var.to_s.delete('@')] = instance_variable_get(var)
     end
+  end
 
-    # Метод для формування рядка для виведення
-    def to_s
-      "Назва: #{@name}, Ціна: #{@price}, Опис: #{@description}, Категорія: #{@category}, Шлях до зображення: #{@image_path}"
-    end
+  def inspect
+    "#<Item: #{to_h}>"
+  end
 
-    # Метод для отримання об'єкта у вигляді хешу
-    def to_h
-      {
-        name: @name,
-        price: @price,
-        description: @description,
-        category: @category,
-        image_path: @image_path
-      }
-    end
+  alias_method :info, :to_s
 
-    # Метод для виведення зручного формату об'єкта
-    def inspect
-      "#<Item #{@name}, #{@price}, #{@category}>"
-    end
-
-    # Метод для оновлення об'єкта через блок
-    def update
-      yield(self) if block_given?
-    end
-
-    # Метод, псевдонім для to_s
-    alias_method :info, :to_s
-
-    # Статичний метод для генерації фіктивних даних
-    def self.generate_fake
-      name = Faker::Commerce.product_name
-      price = Faker::Commerce.price
-      description = Faker::Lorem.sentence
-      category = Faker::Commerce.department
-      image_path = Faker::LoremFlickr.image
-
-      Item.new(
-        name: name,
-        price: price,
-        description: description,
-        category: category,
-        image_path: image_path
-      )
-    end
-
-    # Метод порівняння для Comparable
-    def <=>(other)
-      # Порівнюємо ціни товарів
-      return nil unless other.is_a?(Item)
-      @price <=> other.price
-    end
+  def update
+    yield(self) if block_given?
   end
 end

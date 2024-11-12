@@ -1,15 +1,6 @@
 web_scraping:
-  # URL початкової сторінки для збору даних
-  start_page: https://www.sears.com
-
-  # CSS селектор для отримання назв продуктів
-  product_name_selector: ".product-title"
-
-  # CSS селектор для отримання цін продуктів
-  product_price_selector: ".price .sale-price, .price .regular-price"
-
-  # CSS селектор для отримання опису продуктів
-  product_description_selector: ".product-description"
-
-  # CSS селектор для отримання зображень продуктів
-  product_image_selector: ".product-thumbnail img"
+  start_page: https://www.currys.co.uk/appliances/refrigeration/fridges
+  product_selector: ".row.plp-list-grid"
+  product_name_selector: ".pdp-grid-product-name"
+  product_price_selector: ".value"
+  product_grade_selector: ".curry-sansreg-headline"

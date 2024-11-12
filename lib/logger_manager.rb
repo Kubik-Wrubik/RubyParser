@@ -1,47 +1,25 @@
-require 'yaml'
 require 'logger'
-require 'fileutils'
 
-module RubyParser
-  class LoggerManager
-    class << self
-      attr_reader :logger
+class LoggerManager
+  class << self
+    attr_reader :logger
 
-      # Завантаження конфігурації з YAML-файлу
-      def load_config(file_path)
-        YAML.load_file(file_path)
-      end
+    def init_logger(config)
+      log_dir = config['directory']
+      log_level = config['level']
+      log_files = config['files']
 
-      # Ініціалізація логера
-      def initialize_logger(config)
-        return if @logger
+      Dir.mkdir(log_dir) unless Dir.exist?(log_dir)
+      @logger = Logger.new(File.join(log_dir, log_files['application_log']))
+      @logger.level = Logger.const_get(log_level)
+    end
 
-        FileUtils.mkdir_p(config['directory']) unless Dir.exist?(config['directory'])
+    def log_processed_file(message)
+      puts message
+    end
 
-        level = case config['level'].upcase
-                when 'DEBUG' then Logger::DEBUG
-                when 'INFO' then Logger::INFO
-                when 'WARN' then Logger::WARN
-                when 'ERROR' then Logger::ERROR
-                else Logger::INFO
-                end
-
-        @logger = Logger.new(File.join(config['directory'], config['files']['application_log']), 'daily')
-        @logger.level = level
-
-        @error_logger = Logger.new(File.join(config['directory'], config['files']['error_log']), 'daily')
-        @error_logger.level = Logger::ERROR
-      end
-
-      def log_processed_file(file_name)
-        return unless @logger
-        @logger.info("Файл оброблений: #{file_name}")
-      end
-
-      def log_error(message)
-        return unless @error_logger
-        @error_logger.error(message)
-      end
+    def log_error(message)
+      logger.error(message)
     end
   end
 end

@@ -1,1 +1,1 @@
-This program parse html pages of https://www.sears.com/ website for extracting household appliances prices by categories
+This program parse html pages of https://www.currys.co.uk/ website for extracting fridges

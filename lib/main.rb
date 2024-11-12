@@ -5,27 +5,28 @@ require_relative 'logger_manager'
 module RubyParser
   class Main
     def run
-      # 1. Завантаження бібліотек
       loader = RubyParser::AppConfigLoader.new
       loader.load_libs
 
-      # 2. Завантаження конфігурацій
       config_data = loader.config('config/default_config.yaml', 'config/yaml_config')
 
-      # 3. Перевірка завантаження конфігурацій
-      puts 'Завантажені конфігураційні дані:'
-      loader.pretty_print_config_data
+      webparsing_config = config_data['web_scraping']
 
-      # 4. Логування
-      logging_config = config_data['logging']
-      LoggerManager.initialize_logger(logging_config)
+      configurator = Configurator.new
+  
+      configurator.configure(
+        run_website_parser: 1,
+        run_save_to_csv: 1,
+        run_save_to_json: 1,
+        run_save_to_yaml: 1,
+      )
 
-      # Тестові повідомлення для перевірки логування
-      LoggerManager.log_processed_file('test_file.yaml')
-      LoggerManager.log_error('Це тестове повідомлення про помилку')
+      cart = Cart.new
+
+      configurator.run_actions(cart, webparsing_config) #
+
     end
   end
 end
 
-# Запуск програми
 RubyParser::Main.new.run
