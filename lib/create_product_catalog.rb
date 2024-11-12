@@ -10,7 +10,7 @@ def create_product_catalog(products)
   # Iterate through each category
   products.each do |category, items|
     category_dir = "#{base_dir}/#{category}"
-
+    
     # Create directory for each category
     FileUtils.mkdir_p(category_dir)
 
@@ -28,7 +28,7 @@ def create_product_catalog(products)
       }
 
       # Write product data to YAML file
-      File.write(product_file, product_data.to_yaml)
+      File.open(product_file, 'w') { |f| f.write(product_data.to_yaml) }
     end
   end
 end
@@ -36,13 +36,11 @@ end
 # Example product data
 products = {
   'Refrigerators' => [
-    { name: 'LG Smart Fridge', price: 1200, description: 'High-end refrigerator with smart features',
-      image_url: 'http://example.com/lg-fridge.jpg' },
+    { name: 'LG Smart Fridge', price: 1200, description: 'High-end refrigerator with smart features', image_url: 'http://example.com/lg-fridge.jpg' },
     { name: 'Samsung Fridge', price: 900, description: 'Energy-efficient fridge with modern design', image_url: 'http://example.com/samsung-fridge.jpg' }
   ],
   'Stoves' => [
-    { name: 'GE Gas Stove', price: 500, description: 'Reliable gas stove for home use',
-      image_url: 'http://example.com/ge-gas-stove.jpg' },
+    { name: 'GE Gas Stove', price: 500, description: 'Reliable gas stove for home use', image_url: 'http://example.com/ge-gas-stove.jpg' },
     { name: 'Whirlpool Electric Stove', price: 600, description: 'High-performance electric stove', image_url: 'http://example.com/whirlpool-electric-stove.jpg' }
   ]
 }
